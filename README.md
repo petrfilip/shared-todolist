@@ -30,11 +30,9 @@ cd client
 npm run build
 ```
 
--copy content of /api to server
-
--copy content of /client/build to server
-
--copy /.htaccess to server
+- copy content of /api to server
+- copy content of /client/build to server
+- copy /.htaccess to server
 
 ## Development
 
@@ -48,6 +46,14 @@ Run React GUI
 cd client
 npm start
 ```
+
+## Future
+
+- [ ] add created todo lists to localstorage (allow to access them)
+- [ ] add visited todo lists to logged users to history
+- [ ] allow edit task to task owner 
+- [ ] allow writing notes and upload files for each todo list item
+- [ ] add protected todo list with password
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

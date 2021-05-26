@@ -34,6 +34,12 @@ const TodoListEditor: FC = () => {
     })
     .then(r => r.json())
     .then(r => {
+
+      debugger
+      const stringTask = localStorage.getItem("myTasks") || "[]";
+      const myTodoLists = JSON.parse(stringTask) || [];
+      myTodoLists.push(r)
+      localStorage.setItem("myTasks", JSON.stringify(myTodoLists));
       history.push(`/todolist/${r.uuid}`)
     })
     .catch(e => setIsError("error!!!"));

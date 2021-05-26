@@ -30,7 +30,7 @@ const TodoTaskList = ({taskListId}: Props) => {
       })
 
     });
-  }, [])
+  }, [taskListId])
 
 
   const markAsDone = (index: number, targetState: boolean): void => {
