@@ -6,7 +6,7 @@ import TodoTaskList from "./components/todolist/TodoTaskList";
 import {SnackbarProvider} from "notistack";
 import {AppBar} from "@material-ui/core";
 import Navbar from "./components/layout/Navbar";
-import PersistentDrawerLeft from "./components/layout/Wrapper";
+import Wrapper from "./components/layout/Wrapper";
 
 const App = () => {
 
@@ -15,14 +15,12 @@ const App = () => {
 
   return (
       <SnackbarProvider maxSnack={3}>
-
-
         <Router history={history}>
           <Navbar items={[]}/>
-          <PersistentDrawerLeft>
+          <Wrapper>
             <Route path="/" exact component={TodoListEditor}/>
             <Route path="/todolist/:id" component={Preview}/>
-          </PersistentDrawerLeft>
+          </Wrapper>
         </Router>
       </SnackbarProvider>
   );
