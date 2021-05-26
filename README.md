@@ -49,8 +49,8 @@ npm start
 
 ## Future
 
-- [ ] add created todo lists to localstorage (allow to access them)
-- [ ] add visited todo lists to logged users to history
+- [x] add created todo lists to localstorage (allow to access them)
+- [x] add visited todo lists to logged users to history
 - [ ] allow edit task to task owner 
 - [ ] allow writing notes and upload files for each todo list item
 - [ ] add protected todo list with password
