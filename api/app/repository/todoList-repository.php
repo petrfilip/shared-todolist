@@ -24,9 +24,11 @@ final class TodoListRepository
     {
         $data = (array)$data;
         if (empty($data["uuid"])) {
-            $data["uuid"] = Utils::microseconds();
+            $data["uuid"] = abs(crc32(uniqid()));;
+        } else {
+            $data["_id"] = self::getById(intval($data["uuid"]))["_id"];
         }
-        return self::getDataStore()->updateOrInsert($data);
+        return DatabaseManager::insertOrUpdateVersionedRecord(self::REPOSITORY_NAME, $data, 0);
     }
 
 

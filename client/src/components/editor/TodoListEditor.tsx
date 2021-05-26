@@ -1,18 +1,24 @@
-import React, {ChangeEvent, FC, useState} from 'react';
+import React, {ChangeEvent, FC, useLayoutEffect, useState} from 'react';
 import '../../App.css';
 import {ITask} from "../../Interfaces";
 import TodoTaskEditor from "./TodoTaskEditor";
 import {Button, Container, Grid, Paper, TextField} from "@material-ui/core";
 import {useHistory} from "react-router-dom";
+import useTodoList from "../layout/UseTodoListHook";
+import {useParams} from "react-router";
 
 
 const TodoListEditor: FC = () => {
 
+  const [uuid, setUuid] = useState<number | undefined>(undefined);
   const [title, setTitle] = useState<string>("");
   const [task, setTask] = useState<string>("");
   const [taskList, setTaskList] = useState<ITask[]>([]);
-  const [isError, setIsError] = useState("")
-  let history = useHistory();
+  const {publishTodoList, todoList, editTodoList} = useTodoList();
+
+  let {action} = useParams<{ action: string | undefined }>();
+  let {id} = useParams<{ id: string }>();
+
 
   const handleChangeTask = (e: ChangeEvent<HTMLInputElement>): void => {
     setTask(e.target.value);
@@ -23,28 +29,22 @@ const TodoListEditor: FC = () => {
 
   }
 
-  const publishTodoList = (): void => {
+  useLayoutEffect(() => {
+    if (action === "clone" && todoList) {
+      setUuid(undefined)
+      setTitle(todoList?.title || "");
+      setTaskList(todoList?.taskList || []);
+      return
+    }
 
-    fetch(`${process.env.REACT_APP_BASE_URI}/todolist`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({title, taskList}),
-    })
-    .then(r => r.json())
-    .then(r => {
+    if (action === "edit" && todoList) {
+      setUuid(todoList?.uuid);
+      setTitle(todoList?.title || "");
+      setTaskList(todoList?.taskList || []);
+      return
+    }
+  }, [id, action])
 
-      debugger
-      const stringTask = localStorage.getItem("myTasks") || "[]";
-      const myTodoLists = JSON.parse(stringTask) || [];
-      myTodoLists.push(r)
-      localStorage.setItem("myTasks", JSON.stringify(myTodoLists));
-      history.push(`/todolist/${r.uuid}`)
-    })
-    .catch(e => setIsError("error!!!"));
-
-  }
 
   const addTask = (): void => {
     if (task !== "") {
@@ -66,28 +66,32 @@ const TodoListEditor: FC = () => {
 
   return (
       <Container maxWidth={"xs"} style={{marginTop: "10vh"}}>
-        {/*<pre>{JSON.stringify(taskList, null, 2)}</pre>*/}
         <Paper variant={"outlined"} style={{padding: "20px"}}>
           <Grid container={true} spacing={2}>
             <Grid item xs={8}>
               <TextField
-                  inputProps={{ maxLength: 255 }}
+                  inputProps={{maxLength: 255}}
                   color={"primary"}
                   autoComplete={"off"}
                   value={title} placeholder={"Todo list name"} name={"title"} onChange={handleChangeTitle}/>
             </Grid>
             <Grid item xs={4}>
-              <Button
-                  disabled={taskList.length === 0 || !title}
-                  fullWidth={true} variant={"outlined"} color={"primary"} onClick={publishTodoList}>Publish</Button>
+              {!uuid && <Button
+                disabled={taskList.length === 0 || !title}
+                fullWidth={true} variant={"outlined"} color={"primary"} onClick={() => publishTodoList({title, taskList})}>Publish</Button>}
+
+              {uuid && <Button
+                disabled={taskList.length === 0 || !title}
+                fullWidth={true} variant={"outlined"} color={"secondary"} onClick={() => editTodoList({uuid, title, taskList})}>Edit</Button>}
+
             </Grid>
 
             <Grid item xs={12}>
-              {taskList.map((item: ITask, key: number) => <TodoTaskEditor key={key} completeTask={() => completeTask(key)} task={item}/>)}
+              {taskList?.map((item: ITask, key: number) => <TodoTaskEditor key={key} completeTask={() => completeTask(key)} task={item}/>)}
             </Grid>
             <Grid item xs={8}>
               <TextField
-                  inputProps={{ maxLength: 255 }}
+                  inputProps={{maxLength: 255}}
                   color={"primary"}
                   autoComplete={"off"}
                   value={task} placeholder={"Task..."} name={"task"} onChange={handleChangeTask}/>

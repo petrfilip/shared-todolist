@@ -72,7 +72,8 @@ $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 
 $app->get('/', function (Request $request, Response $response, $args) {
-    $response->getBody()->write("Hello");
+    $var = bindec(random_bytes(5000));
+    $response->getBody()->write("asdf {$var}" );
     return $response;
 });
 

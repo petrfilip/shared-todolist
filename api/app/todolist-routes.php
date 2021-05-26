@@ -30,7 +30,7 @@ return function (App $app) {
         });
 
         /**
-         * Insert new TODO list
+         * Insert or update new TODO list
          */
         $group->post('', function (Request $request, Response $response, $args) {
             $requestData = $request->getParsedBody();
@@ -38,14 +38,15 @@ return function (App $app) {
             $newTodolist = array();
             $newTodolist["taskList"] = array();
 
+            $newTodolist["uuid"] = !empty($requestData["uuid"]) ? $requestData["uuid"] : null;
             $newTodolist["title"] = substr($requestData["title"], 0, 255);
             for ($i = 0; $i <= sizeof($requestData["taskList"])-1; $i++) {
-                $newTodolist["taskList"]["title"] = substr($requestData["taskList"][$i]["title"], 0, 255);
-                $newTodolist["taskList"]["isCompleted"] = false;
+                $newTodolist["taskList"][$i]["title"] = substr($requestData["taskList"][$i]["title"], 0, 255);
+                $newTodolist["taskList"][$i]["isCompleted"] = false;
             }
 
 
-            $inserted = TodoListRepository::insertOrUpdate($requestData);
+            $inserted = TodoListRepository::insertOrUpdate($newTodolist);
             $payload = json_encode($inserted);
 
             $response = $response->withHeader('Content-Type', 'application/json');

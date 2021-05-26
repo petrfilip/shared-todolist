@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import {makeStyles, useTheme} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -14,9 +14,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import {Box, Button} from "@material-ui/core";
-import {Link as RouterLink, useHistory, useLocation} from "react-router-dom";
-import {ITask, ITodoList} from "../../Interfaces";
+import {Link as RouterLink, useHistory} from "react-router-dom";
 import DeleteIcon from '@material-ui/icons/Delete';
 import ShareIcon from '@material-ui/icons/Share';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
@@ -24,6 +22,8 @@ import {useClipboard} from "use-clipboard-copy";
 import useWebShare from "react-use-web-share";
 import {useSnackbar} from "notistack";
 import AddIcon from '@material-ui/icons/Add';
+import useTodoList from "./UseTodoListHook";
+import EditIcon from '@material-ui/icons/Edit';
 
 const drawerWidth = 240;
 
@@ -97,7 +97,8 @@ export default function Wrapper({children}: Props) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [data, setData] = useState<ITodoList[]>([]);
+  const {allTodoLists, removeFromLocalStorage, todoList} = useTodoList();
+  let history = useHistory();
   const {enqueueSnackbar} = useSnackbar();
   const clipboard = useClipboard({
     onSuccess() {
@@ -109,11 +110,11 @@ export default function Wrapper({children}: Props) {
   });
   const {loading, isSupported, share} = useWebShare(
       () => {
-      enqueueSnackbar('Address was copied successfully!', {variant: 'success'})
-    },
-    () => {
-      enqueueSnackbar('Failed to copy text!', {variant: 'error'})
-    }
+        enqueueSnackbar('Address was copied successfully!', {variant: 'success'})
+      },
+      () => {
+        enqueueSnackbar('Failed to copy text!', {variant: 'error'})
+      }
   );
 
   const handleDrawerOpen = () => {
@@ -124,22 +125,9 @@ export default function Wrapper({children}: Props) {
     setOpen(false);
   };
 
-  useLayoutEffect(() => {
-    const stringTask = localStorage.getItem("myTasks") || "[]";
-    setData(JSON.parse(stringTask) || [])
-  }, [open])
-
-  const removeFromLocalStorage = (uuid: number) => {
-    const stringTask = localStorage.getItem("myTasks") || "[]";
-    const parsedTasks = JSON.parse(stringTask) || [];
-    const filteredTasks = parsedTasks.filter((item: ITodoList, index: number) => item.uuid !== uuid);
-    localStorage.setItem("myTasks", JSON.stringify(filteredTasks));
-    setData(filteredTasks)
-  }
-
   const shareIconHandler = () => {
     if (isSupported) {
-      share({title: "asdf", text:"aaaa", url: window.location.href})
+      share({title: todoList?.title, text: "Something new to do...", url: window.location.href})
     } else {
       clipboard.copy(window.location.href);
     }
@@ -168,12 +156,24 @@ export default function Wrapper({children}: Props) {
               Todolist
             </Typography>
 
-            <IconButton color="inherit">
-              <FileCopyIcon/>
-            </IconButton>
-            <IconButton color="inherit" onClick={shareIconHandler}>
-              <ShareIcon/>
-            </IconButton>
+            {todoList && <>
+              <IconButton color="inherit"
+                          onClick={() => {
+                            history.push(`/todolist/${todoList?.uuid}/edit`)
+                          }
+                          }>
+                <EditIcon/>
+              </IconButton>
+              <IconButton color="inherit"
+                          onClick={() => {
+                            history.push(`/todolist/${todoList?.uuid}/clone`)
+                          }
+                          }>
+                <FileCopyIcon/>
+              </IconButton>
+              <IconButton color="inherit" onClick={shareIconHandler}>
+                <ShareIcon/>
+              </IconButton></>}
           </Toolbar>
         </AppBar>
         <Drawer
@@ -195,18 +195,21 @@ export default function Wrapper({children}: Props) {
             <ListItem button key={"addNew"} component={RouterLink} to={`/`} /*onClick={() => setOpen(false)}*/>
               <ListItemText>
                 <IconButton>
-                  <AddIcon />
+                  <AddIcon/>
                 </IconButton>
                 Add new
               </ListItemText>
             </ListItem>
             <Divider/>
-            {data.map((item, index) => (
+            {allTodoLists?.map((item, index) => (
                 <ListItem button key={item.uuid} component={RouterLink} to={`/todolist/${item.uuid}`}>
-                  <ListItemText><IconButton onClick={(e) => {
-                    e.preventDefault()
-                    removeFromLocalStorage(item.uuid)
-                  }}><DeleteIcon/></IconButton>{item.title}</ListItemText>
+                  <ListItemText>
+                    <IconButton onClick={(e) => {
+                      e.preventDefault()
+                      item.uuid && removeFromLocalStorage(item.uuid)
+                    }}><DeleteIcon/></IconButton>
+                    <Typography variant={"overline"}>{item.title}</Typography>
+                    <Typography style={{display: "block"}} variant={"caption"} color={"textSecondary"}>{item.sys?.created}</Typography></ListItemText>
                 </ListItem>
             ))}
           </List>

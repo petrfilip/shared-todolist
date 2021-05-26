@@ -64,11 +64,13 @@ final class DatabaseManager
 
         $loadVersion = DatabaseManager::getById($collectionName, $id);
 
-        if ($data["sys"]["version"] != $loadVersion["sys"]["version"]) {
+        if ($data["sys"]["version"] != null && $data["sys"]["version"] != $loadVersion["sys"]["version"]) {
             throw new Exception("Version error - the record has been modified from another source!");
         }
 
-        $data["sys"]["version"] = $data["sys"]["version"] + 1;
+        $data["sys"]["created"] = $loadVersion["sys"]["created"];
+        $data["sys"]["createdBy"] = $loadVersion["sys"]["createdBy"];
+        $data["sys"]["version"] = $loadVersion["sys"]["version"] + 1;
         $data["sys"]["updated"] = Utils::getCurrentDateTime();
         $data["sys"]["updatedBy"] = $userId;
         DatabaseManager::updateById($collectionStore, $data);
