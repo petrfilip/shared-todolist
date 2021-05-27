@@ -114,7 +114,6 @@ function useTodoList() {
     .then(r => r.json())
     .then(r => {
 
-      debugger
       const stringTask = localStorage.getItem("myTasks") || "[]";
       let myTodoLists = JSON.parse(stringTask) || [];
       myTodoLists = myTodoLists.filter((item:ITodoList) => item.uuid !== todoListToPublish.uuid);

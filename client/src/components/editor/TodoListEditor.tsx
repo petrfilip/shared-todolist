@@ -1,12 +1,12 @@
 import React, {ChangeEvent, FC, useLayoutEffect, useState} from 'react';
 import '../../App.css';
 import {ITask} from "../../Interfaces";
-import TodoTaskEditor from "./TodoTaskEditor";
-import {Button, Container, Grid, Paper, TextField} from "@material-ui/core";
+import {Button, Checkbox, Container, FormControlLabel, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Paper, TextField} from "@material-ui/core";
 import {useHistory} from "react-router-dom";
 import useTodoList from "../layout/UseTodoListHook";
 import {useParams} from "react-router";
-
+import {List as DragAndDrop, arrayMove} from 'react-movable';
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const TodoListEditor: FC = () => {
 
@@ -59,7 +59,13 @@ const TodoListEditor: FC = () => {
   }
 
   const removeTask = (key: number): void => {
-    setTaskList(taskList.filter((item, index ) => index !== key ));
+    setTaskList(taskList.filter((item, index) => index !== key));
+  }
+
+  const completeTask = (key: number): void => {
+    const newTodoList = [...taskList];
+    newTodoList[key].isCompleted = !newTodoList[key].isCompleted
+    setTaskList(newTodoList);
   }
 
   return (
@@ -85,7 +91,40 @@ const TodoListEditor: FC = () => {
             </Grid>
 
             <Grid item xs={12}>
-              {taskList?.map((item: ITask, key: number) => <TodoTaskEditor key={key} onDeleteClick={() => removeTask(key)} task={item}/>)}
+
+              <DragAndDrop
+                  values={taskList}
+                  onChange={({oldIndex, newIndex}) =>
+                      setTaskList(arrayMove(taskList, oldIndex, newIndex))
+                  }
+                  renderList={({children, props}) => <List dense {...props}>{children}</List>}
+                  renderItem={({value, props, index}) => <ListItem  {...props}>
+                    <ListItem>
+
+
+                      <FormControlLabel
+                          control={
+                            <Checkbox
+                                checked={value.isCompleted}
+                                onChange={() => index !== undefined && completeTask(index)}
+                                color="primary"
+                            />
+                          }
+                          label={value.title}
+                      />
+                    </ListItem>
+
+                    <IconButton edge="end" aria-label="delete" onClick={() => {
+                      index !== undefined && removeTask(index)
+                    }}>
+                      <DeleteIcon/>
+                    </IconButton>
+
+
+                  </ListItem>}
+              />
+
+              {/*{taskList?.map((item: ITask, key: number) => <TodoTaskEditor key={key} onDeleteClick={() => removeTask(key)} task={item}/>)}*/}
             </Grid>
             <Grid item xs={8}>
               <TextField
