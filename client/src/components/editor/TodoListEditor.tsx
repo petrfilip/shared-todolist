@@ -58,10 +58,8 @@ const TodoListEditor: FC = () => {
 
   }
 
-  const completeTask = (key: number): void => {
-    const newTodoList = [...taskList];
-    newTodoList[key].isCompleted = !newTodoList[key].isCompleted
-    setTaskList(newTodoList);
+  const removeTask = (key: number): void => {
+    setTaskList(taskList.filter((item, index ) => index !== key ));
   }
 
   return (
@@ -87,7 +85,7 @@ const TodoListEditor: FC = () => {
             </Grid>
 
             <Grid item xs={12}>
-              {taskList?.map((item: ITask, key: number) => <TodoTaskEditor key={key} completeTask={() => completeTask(key)} task={item}/>)}
+              {taskList?.map((item: ITask, key: number) => <TodoTaskEditor key={key} onDeleteClick={() => removeTask(key)} task={item}/>)}
             </Grid>
             <Grid item xs={8}>
               <TextField

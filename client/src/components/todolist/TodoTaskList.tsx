@@ -1,9 +1,8 @@
-import React, {useLayoutEffect, useState} from 'react';
-import {Button, Container, Grid, IconButton, Snackbar} from "@material-ui/core";
-import {IError, ITask, ITodoList} from "../../Interfaces";
-import TodoTaskEditor from "../editor/TodoTaskEditor";
-import {useSnackbar} from "notistack";
+import React from 'react';
+import {Container} from "@material-ui/core";
+import {ITask} from "../../Interfaces";
 import useTodoList from "../layout/UseTodoListHook";
+import TodoTaskItem from "./TodoTaskItem";
 
 const TodoTaskList = () => {
 
@@ -13,7 +12,7 @@ const TodoTaskList = () => {
       <Container maxWidth={"xs"}>
         <h1>{todoList?.title}</h1>
         {todoList?.taskList?.map((item: ITask, key: number) =>
-            <TodoTaskEditor key={key}
+            <TodoTaskItem key={key}
                             task={item}
                             completeTask={() => markAsDone(key, !item.isCompleted)}/>)}
       </Container>

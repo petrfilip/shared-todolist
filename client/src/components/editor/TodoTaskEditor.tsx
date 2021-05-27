@@ -1,26 +1,21 @@
 import React from 'react';
 import {ITask} from "../../Interfaces";
-import {Button, Checkbox, Container, FormControlLabel, Grid} from "@material-ui/core";
+import {Container, IconButton} from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 
 interface Props {
   task: ITask,
-  completeTask?(): void
+  onDeleteClick(): void
 }
 
-const TodoTaskEditor = ({task, completeTask}: Props) => {
+const TodoTaskEditor = ({task, onDeleteClick}: Props) => {
   return (
       <Container>
-      <FormControlLabel
-          control={
-            <Checkbox
-                checked={task.isCompleted}
-                onChange={completeTask}
-                color="primary"
-            />
-          }
-          label={task.title}
-      />
+        <IconButton onClick={onDeleteClick}>
+          <DeleteIcon/>
+        </IconButton>
+        {task.title}
       </Container>
   );
 };

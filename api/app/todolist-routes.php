@@ -42,7 +42,12 @@ return function (App $app) {
             $newTodolist["title"] = substr($requestData["title"], 0, 255);
             for ($i = 0; $i <= sizeof($requestData["taskList"])-1; $i++) {
                 $newTodolist["taskList"][$i]["title"] = substr($requestData["taskList"][$i]["title"], 0, 255);
-                $newTodolist["taskList"][$i]["isCompleted"] = false;
+
+                if (empty($newTodolist["uuid"])) {
+                    $newTodolist["taskList"][$i]["isCompleted"] = false;
+                } else {
+                    $newTodolist["taskList"][$i]["isCompleted"] = $requestData["taskList"][$i]["isCompleted"];
+                }
             }
 
 
