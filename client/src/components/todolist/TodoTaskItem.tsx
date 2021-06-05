@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {ITask} from "../../Interfaces";
 import {Checkbox, Container, FormControlLabel} from "@material-ui/core";
 
@@ -9,7 +9,7 @@ interface Props {
   completeTask?(): void
 }
 
-const TodoTaskItem = ({task, completeTask}: Props) => {
+const TodoTaskItem: FC<Props> = ({task, completeTask}) => {
   return (
       <Container>
         <FormControlLabel

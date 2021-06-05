@@ -1,20 +1,20 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {Container} from "@material-ui/core";
 import {ITask} from "../../Interfaces";
 import useTodoList from "../layout/UseTodoListHook";
 import TodoTaskItem from "./TodoTaskItem";
 
-const TodoTaskList = () => {
+const TodoTaskList: FC = () => {
 
   const {todoList, markAsDone} = useTodoList();
 
   const loaded = (
-      <Container maxWidth={"xs"}>
+      <Container maxWidth={"xs"} style={{marginTop: "10vh"}}>
         <h1>{todoList?.title}</h1>
         {todoList?.taskList?.map((item: ITask, key: number) =>
             <TodoTaskItem key={key}
-                            task={item}
-                            completeTask={() => markAsDone(key, !item.isCompleted)}/>)}
+                          task={item}
+                          completeTask={() => markAsDone(key, !item.isCompleted)}/>)}
       </Container>
   );
 

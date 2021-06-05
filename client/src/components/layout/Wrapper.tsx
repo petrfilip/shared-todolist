@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {FC} from 'react';
 import clsx from 'clsx';
 import {makeStyles, useTheme} from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
@@ -93,7 +93,7 @@ interface Props {
 }
 
 
-export default function Wrapper({children}: Props) {
+const Wrapper: FC<Props> = ({children}: Props) => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -225,3 +225,5 @@ export default function Wrapper({children}: Props) {
       </div>
   );
 }
+
+export default Wrapper;

@@ -8,7 +8,7 @@ interface Props {
 
 const TodoListContext = React.createContext<TodoListContextType | undefined>(undefined);
 
-const TodoListContextProvider: React.FC = ({children}) => {
+const TodoListContextProvider: React.FC<Props> = ({children}) => {
 
   const [todoList, setTodoList] = React.useState<ITodoList>()
   const [allTodoLists, setAllTodoLists] = React.useState<ITodoList[]>([]);
