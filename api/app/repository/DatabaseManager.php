@@ -64,7 +64,7 @@ final class DatabaseManager
 
         $loadVersion = DatabaseManager::getById($collectionName, $id);
 
-        if ($data["sys"]["version"] != null && $data["sys"]["version"] != $loadVersion["sys"]["version"]) {
+        if (isset($data["sys"]) && $data["sys"]["version"] != null && $data["sys"]["version"] != $loadVersion["sys"]["version"]) {
             throw new Exception("Version error - the record has been modified from another source!");
         }
 
@@ -102,28 +102,25 @@ final class DatabaseManager
         return $loadVersion;
     }
 
-    static public function insertOrUpdateVersionedRecord($collectionName, $data, $userId)
+    static public function insertOrUpdateVersionedRecord($collectionName, $data, $userId, $createAudit = true)
     {
-        $id = $data["_id"];
-        if (empty($id)) {
+        $hasId = !empty($data["_id"]);
+        if (!$hasId) {
             return self::insertNewVersionedRecord($collectionName, $data, $userId);
         } else {
-            return self::updateVersionedRecord($collectionName, $data, $userId);
+            return self::updateVersionedRecord($collectionName, $data, $userId, $createAudit);
         }
     }
 
     static public function insertNewVersionedRecord($collectionName, $data, $userId)
     {
-        $data = (array)$data;
-        $data["sys"]["version"] = 1;
-        $data["sys"]["created"] = Utils::getCurrentDateTime();
-        $data["sys"]["updated"] = Utils::getCurrentDateTime();
-        $data["sys"]["createBy"] = $userId;
-        $collectionStore = DatabaseManager::getDataStore($collectionName);
-        return $collectionStore->insert($data);
+        $asCollection = array();
+        array_push($asCollection, $data);
+
+        return self::insertNewVersionedRecords($collectionName, $asCollection, $userId)[0];
     }
 
-    static public function insertNewVersionedRecords($collectionName, $data, $userId)
+    static public function insertNewVersionedRecords($collectionName, $data, $userId): array
     {
         $now = Utils::getCurrentDateTime();
         foreach ($data as $item) {

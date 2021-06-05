@@ -28,7 +28,7 @@ final class TodoListRepository
         } else {
             $data["_id"] = self::getById(intval($data["uuid"]))["_id"];
         }
-        return DatabaseManager::insertOrUpdateVersionedRecord(self::REPOSITORY_NAME, $data, 0);
+        return DatabaseManager::insertOrUpdateVersionedRecord(self::REPOSITORY_NAME, $data, 0, false);
     }
 
 

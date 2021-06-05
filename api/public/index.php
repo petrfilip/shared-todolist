@@ -72,8 +72,7 @@ $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 
 $app->get('/', function (Request $request, Response $response, $args) {
-    $var = bindec(random_bytes(5000));
-    $response->getBody()->write("asdf {$var}" );
+    $response->getBody()->write("Hello" );
     return $response;
 });
 
@@ -81,8 +80,7 @@ $coursesRoutes = require __DIR__ . '/../app/todolist-routes.php';
 $coursesRoutes($app);
 
 $app->options('/{routes:.+}', function (Request $request, Response $response, $args) {
-    $response = $response->withHeader('Content-Type', 'application/json');
-    return $response;
+    return $response->withHeader('Content-Type', 'application/json');
 });
 
 $app->map(['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], '/{routes:.+}', function ($request, $response) {
