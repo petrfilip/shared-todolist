@@ -134,7 +134,7 @@ const Wrapper: FC<Props> = ({children}: Props) => {
     }
   }
 
-  const getPageTitle = () => {
+  const getPageTitle = (): string => {
     if (todoList?.uuid === undefined) {
       return "Create new";
     }

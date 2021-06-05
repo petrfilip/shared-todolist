@@ -8,6 +8,7 @@ import {useHistory} from "react-router-dom";
 
 function useTodoList() {
   const {todoList, setTodoList, allTodoLists, setAllTodoLists} = React.useContext(TodoListContext) as TodoListContextType
+  const [isLoading, setIsLoading] = useState(false);
   const {enqueueSnackbar} = useSnackbar();
   let {id} = useParams<{ id: string }>();
   let history = useHistory();
@@ -27,6 +28,8 @@ function useTodoList() {
       return
     }
 
+    setIsLoading(true);
+
     fetch(`${process.env.REACT_APP_BASE_URI}/todolist/${id}`, {})
     .then(r => r.json())
     .then(r => setTodoList(r))
@@ -36,7 +39,8 @@ function useTodoList() {
         enqueueSnackbar(`ERROR: ${errorMessage.error}`, {variant: 'error',});
       })
 
-    });
+    })
+    .finally(() => setIsLoading(false));
   }, [id])
 
   /**
@@ -47,6 +51,9 @@ function useTodoList() {
     if (!id) {
       return
     }
+
+    setIsLoading(true)
+
 
     const newTodoList = Object.assign({}, todoList);
     newTodoList.taskList[index].isCompleted = targetState;
@@ -70,7 +77,9 @@ function useTodoList() {
         enqueueSnackbar(`ERROR: ${errorMessage.error}`, {variant: 'error',});
       })
 
-    });
+    })
+    .finally(() => setIsLoading(false));
+    ;
   }
 
   /**
@@ -78,6 +87,7 @@ function useTodoList() {
    */
   const publishTodoList = (todoListToPublish: ITodoList): void => {
 
+    setIsLoading(true)
     fetch(`${process.env.REACT_APP_BASE_URI}/todolist`, {
       method: 'POST',
       headers: {
@@ -98,12 +108,16 @@ function useTodoList() {
     .catch(e => e.json().then((errorMessage: IError) => {
           enqueueSnackbar(`ERROR: ${errorMessage.error}`, {variant: 'error',});
         })
-    );
+    )
+    .finally(() => setIsLoading(false));
+    ;
   }
 
 
   const editTodoList = (todoListToPublish: ITodoList): void => {
 
+    setIsLoading(true)
+    setTodoList(todoListToPublish)
     fetch(`${process.env.REACT_APP_BASE_URI}/todolist`, {
       method: 'POST',
       headers: {
@@ -116,8 +130,9 @@ function useTodoList() {
 
       const stringTask = localStorage.getItem("myTasks") || "[]";
       let myTodoLists = JSON.parse(stringTask) || [];
-      myTodoLists = myTodoLists.filter((item:ITodoList) => item.uuid !== todoListToPublish.uuid);
+      myTodoLists = myTodoLists.filter((item: ITodoList) => item.uuid !== todoListToPublish.uuid);
       myTodoLists.push(r)
+      setTodoList(r)
       localStorage.setItem("myTasks", JSON.stringify(myTodoLists));
       setAllTodoLists(myTodoLists)
       history.push(`/todolist/${r.uuid}`)
@@ -125,7 +140,8 @@ function useTodoList() {
     .catch(e => e.json().then((errorMessage: IError) => {
           enqueueSnackbar(`ERROR: ${errorMessage.error}`, {variant: 'error',});
         })
-    );
+    ).finally(() => setIsLoading(false));
+    ;
   }
 
 
@@ -145,7 +161,7 @@ function useTodoList() {
   }
 
 
-  return {allTodoLists, todoList, setTodoList, markAsDone, publishTodoList, removeFromLocalStorage, editTodoList, id}
+  return {allTodoLists, isLoading, todoList, setTodoList, markAsDone, publishTodoList, removeFromLocalStorage, editTodoList, id}
 }
 
 export default useTodoList;
