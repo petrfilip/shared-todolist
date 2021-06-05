@@ -145,7 +145,7 @@ function useTodoList() {
   }
 
 
-  return {allTodoLists, todoList, markAsDone, publishTodoList, removeFromLocalStorage, editTodoList, id}
+  return {allTodoLists, todoList, setTodoList, markAsDone, publishTodoList, removeFromLocalStorage, editTodoList, id}
 }
 
 export default useTodoList;

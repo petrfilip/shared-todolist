@@ -13,7 +13,7 @@ const TodoListEditor: FC = () => {
   const [title, setTitle] = useState<string>("");
   const [task, setTask] = useState<string>("");
   const [taskList, setTaskList] = useState<ITask[]>([]);
-  const {publishTodoList, todoList, editTodoList} = useTodoList();
+  const {publishTodoList, todoList, editTodoList, setTodoList} = useTodoList();
 
   let {action} = useParams<{ action: string | undefined }>();
   let {id} = useParams<{ id: string }>();
@@ -47,6 +47,14 @@ const TodoListEditor: FC = () => {
       setTaskList(todoList?.taskList || []);
       return
     }
+
+    if (action === undefined && id === undefined) {
+      setUuid(undefined);
+      setTitle("");
+      setTaskList([]);
+      setTodoList({title:"", taskList:[]})
+    }
+
   }, [id, action])
 
 

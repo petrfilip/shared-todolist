@@ -24,6 +24,7 @@ import {useSnackbar} from "notistack";
 import AddIcon from '@material-ui/icons/Add';
 import useTodoList from "./UseTodoListHook";
 import EditIcon from '@material-ui/icons/Edit';
+import { Helmet } from 'react-helmet';
 
 const drawerWidth = 240;
 
@@ -133,9 +134,24 @@ const Wrapper: FC<Props> = ({children}: Props) => {
     }
   }
 
+  const getPageTitle = () => {
+    if (todoList?.uuid === undefined) {
+      return "Create new";
+    }
+
+    const title = todoList && todoList?.title || "";
+    const remaining = todoList && todoList?.taskList.filter((i) => !i.isCompleted).length
+    const remainingTitle = remaining === 0 ? "completed" : remaining;
+    return title + " (" + remainingTitle + ")"
+  }
+
   return (
       <div className={classes.root}>
         <CssBaseline/>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <title>{getPageTitle()} | TODO</title>
+        </Helmet>
         <AppBar
             position="fixed"
             className={clsx(classes.appBar, {
@@ -158,6 +174,7 @@ const Wrapper: FC<Props> = ({children}: Props) => {
 
             {todoList && <>
               <IconButton color="inherit"
+                          disabled={todoList?.uuid === undefined}
                           onClick={() => {
                             history.push(`/todolist/${todoList?.uuid}/edit`)
                           }
@@ -165,13 +182,14 @@ const Wrapper: FC<Props> = ({children}: Props) => {
                 <EditIcon/>
               </IconButton>
               <IconButton color="inherit"
+                          disabled={todoList?.uuid === undefined}
                           onClick={() => {
                             history.push(`/todolist/${todoList?.uuid}/clone`)
                           }
                           }>
                 <FileCopyIcon/>
               </IconButton>
-              <IconButton color="inherit" onClick={shareIconHandler}>
+              <IconButton color="inherit" disabled={todoList?.uuid === undefined} onClick={shareIconHandler}>
                 <ShareIcon/>
               </IconButton></>}
           </Toolbar>
