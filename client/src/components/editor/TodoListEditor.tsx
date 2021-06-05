@@ -1,11 +1,10 @@
 import React, {ChangeEvent, FC, useLayoutEffect, useState} from 'react';
 import '../../App.css';
 import {ITask} from "../../Interfaces";
-import {Button, Checkbox, Container, FormControlLabel, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemSecondaryAction, ListItemText, Paper, TextField} from "@material-ui/core";
-import {useHistory} from "react-router-dom";
+import {Button, Checkbox, Container, FormControlLabel, Grid, IconButton, List, ListItem, Paper, TextField} from "@material-ui/core";
 import useTodoList from "../layout/UseTodoListHook";
 import {useParams} from "react-router";
-import {List as DragAndDrop, arrayMove} from 'react-movable';
+import {arrayMove, List as DragAndDrop} from 'react-movable';
 import DeleteIcon from "@material-ui/icons/Delete";
 
 const TodoListEditor: FC = () => {
@@ -19,6 +18,11 @@ const TodoListEditor: FC = () => {
   let {action} = useParams<{ action: string | undefined }>();
   let {id} = useParams<{ id: string }>();
 
+  const handleEditTask = (taskIndex: number, value: string): void => {
+    const newTaskList = [...taskList];
+    newTaskList[taskIndex].title = value
+    setTaskList(newTaskList);
+  }
 
   const handleChangeTask = (e: ChangeEvent<HTMLInputElement>): void => {
     setTask(e.target.value);
@@ -100,8 +104,6 @@ const TodoListEditor: FC = () => {
                   renderList={({children, props}) => <List dense {...props}>{children}</List>}
                   renderItem={({value, props, index}) => <ListItem  {...props}>
                     <ListItem>
-
-
                       <FormControlLabel
                           control={
                             <Checkbox
@@ -110,9 +112,13 @@ const TodoListEditor: FC = () => {
                                 color="primary"
                             />
                           }
-                          label={value.title}
+                          label={<TextField
+                              variant={"standard"}
+                              onChange={(e) => index !== undefined && handleEditTask(index, e.target.value)}
+                              value={value.title} label={""}/>}
                       />
                     </ListItem>
+
 
                     <IconButton edge="end" aria-label="delete" onClick={() => {
                       index !== undefined && removeTask(index)
