@@ -1,10 +1,20 @@
 # TypeScript Todo list with Slim PHP backend
 
-Self-hosted application for shared TODO lists (backend included). Each TODO is accessible on unique URL
+Self-hosted application for shared TODO lists (backend included). 
+Each TODO is accessible on unique URL.
 
 ![Image of Yaktocat](demo.gif)
 
-##Technologies:
+
+## Features
+- create, edit and clone tasks
+  - changing order (drag&drop)
+  - inline edit
+- saving tasks to localstorage (only for task owner)
+- share task publicly via URL
+
+
+## Technologies:
 
 - React (TypeScript)
     - material UI
@@ -20,7 +30,7 @@ The application can be easily placed almost on any PHP hosting.
 
 ### Installation (the short way)
 
-Unzip release file to your server (comming soon) 
+Unzip [release](/releases) file to your server 
 
 ### Installation (the long way)
 
@@ -51,6 +61,7 @@ npm start
 
 - [x] add created todo lists to localstorage (allow to access them)
 - [x] add visited todo lists to logged users to history
+- [ ] add user support
 - [ ] allow edit task to task owner 
 - [ ] allow writing notes and upload files for each todo list item
 - [ ] add protected todo list with password
